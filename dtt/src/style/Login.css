@@ -1,0 +1,50 @@
+.Form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  border: 2px solid black;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 100%;
+}
+
+.Form label {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.Form input {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+  font-size: 16px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.Form button {
+  background-color: #2d2155;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  width: 80px;
+}
+
+.form button:hover {
+  background-color: rgb(33, 75, 159);
+}
+
+.back-img {
+  height: cover;
+  /* background-image: url('../Images/logo512.png'); */
+  background-repeat: no-repeat;
+  background-size: cover;
+}
