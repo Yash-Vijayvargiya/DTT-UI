@@ -14,6 +14,7 @@ import Home from './component/Home'
 import Contact from './component/Contact'
 import Notification from './component/Notification'
 import LoginForm from './component/LoginForm'
+import ProfessorUpdate from './component/updates/ProfessorUpdate'
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
   const [userInfo, setUserInfo] = useState<UserInfoType>({
@@ -22,7 +23,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
     userRole: '',
     classId: '',
   })
-  const [showNavBar, setshowNavBar] = useState(false)
+  const [showNavBar, setshowNavBar] = useState(true)
   return (
     <Router>
       {showNavBar && <NavBar />}
@@ -44,6 +45,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
         />
         <Route path='/notification' component={Notification} />
         <Route path='/contact' component={Contact} />
+        <Route path='/professorUpdate' render={() => <ProfessorUpdate />} />
       </Switch>
     </Router>
   )

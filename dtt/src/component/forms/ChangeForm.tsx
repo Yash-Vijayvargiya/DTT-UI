@@ -6,61 +6,60 @@ import { eventNames } from 'process'
 import { Constants } from '../../constants'
 
 interface PropsType {
-  index: number
   id: string
   cellValue: CellValue
-  handleSubmit: (key: string, value: CellValue, index: number) => void
-  handleDelete: (key: string, value: CellValue, index: number) => void
-
+  handleSubmit: (key: string, value: CellValue) => void
   courses: Course[]
+  disableForm: boolean
+  deleteType: boolean
 }
-type StateDictionary = {
-  [key: string]: string
-}
-const CellForm = (props: PropsType) => {
+const ChangeForm = (props: PropsType) => {
   const [cellValue, setCellValue] = useState<CellValue>(props.cellValue)
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCellValue({ ...cellValue, [event.target.name]: event.target.value })
   }
   const [showPopover, setShowPopover] = useState(false)
-  const courseMap: StateDictionary = {}
-  const [cMap, setcMap] = useState<StateDictionary>({})
+  const [disableForm, setDisableForm] = useState('click')
+
   const handleFocusOut = () => {
     setShowPopover(false)
   }
   useEffect(() => {
-    props.courses.map((c) => (courseMap[c.code] = c.shortName))
-    setcMap(courseMap)
-  }, [props.courses])
-  useEffect(() => {
-    props.courses.map((c) => (courseMap[c.code] = c.shortName))
-    console.log(courseMap)
-    setcMap(courseMap)
-  }, [])
-  useEffect(() => {
     setCellValue(props.cellValue)
   }, [props.cellValue])
+  useEffect(() => {
+    if (props.disableForm) setDisableForm('')
+    else setDisableForm('click')
+  }, [props.disableForm])
   const cellFormat = (data: CellValue) => {
     if (
       typeof data.name == 'undefined' ||
       typeof data.loc == 'undefined' ||
       data.courseCode === ''
     )
-      return ' + '
-    if (data.type.toLowerCase() === 'class') return data.name + ' ' + data.loc
+      return !disableForm ? ' - ' : ' + '
+    if (data.type.toLowerCase() === 'class') return data.name + '|' + data.loc
     if (data.type.toLowerCase() === 'tut')
-      return data.name + ' tut ' + data.grp + ' ' + data.loc
+      return data.name + ' tut ' + data.grp + '|' + data.loc
     if (data.type.toLowerCase() === 'lab')
-      return data.name + ' ' + data.grp + ' ' + data.loc
-    return ' + '
+      return data.name + ' ' + data.grp + '|' + data.loc
+    return data.name + '|' + data.loc
   }
-
+  const getMenuPlacement = () => {
+    if (
+      props.id[props.id.length - 1] === '6' ||
+      props.id[props.id.length - 1] === '7' ||
+      props.id[props.id.length - 1] === '8'
+    )
+      return 'left'
+    return 'right'
+  }
   return (
     <>
       <OverlayTrigger
         trigger='click'
-        placement='right'
-        show={showPopover}
+        placement={getMenuPlacement()}
+        show={!disableForm ? false : showPopover}
         onToggle={setShowPopover}
         rootClose={true}
         rootCloseEvent='mousedown'
@@ -73,24 +72,21 @@ const CellForm = (props: PropsType) => {
                   <FloatingLabel controlId='courseSelect' label='Select Course'>
                     <Form.Select
                       value={
-                        typeof cellValue == 'undefined'
-                          ? ''
-                          : cellValue.courseCode
+                        typeof cellValue == 'undefined' ? '' : cellValue.name
                       }
-                      name='courseCode'
+                      name='name'
                       onChange={(event) => {
                         setCellValue({
                           ...cellValue,
                           [event.target.name]: event.target.value,
-                          name: cMap[event.target.value],
                         })
-                        console.log(cMap)
+                        console.log(event.target)
                       }}
                     >
                       <option value=''>Choose...</option>
                       {props.courses.map((c) => (
-                        <option key={c.code} value={c.code}>
-                          {c.shortName}
+                        <option key={c.code} value={c.name}>
+                          {c.name}
                         </option>
                       ))}
                     </Form.Select>
@@ -148,7 +144,7 @@ const CellForm = (props: PropsType) => {
                     >
                       <option value=''>Choose...</option>
                       {Constants.types.map((c) => (
-                        <option key={c.value} value={c.value}>
+                        <option key={c.value} value={c.value.toLowerCase()}>
                           {c.label}
                         </option>
                       ))}
@@ -156,38 +152,38 @@ const CellForm = (props: PropsType) => {
                   </FloatingLabel>
                 </Col>
               </Row>
-              <Row>
-                <Col>
-                  <Button
-                    onClick={() => {
-                      handleFocusOut()
-                      props.handleSubmit(props.id, cellValue, props.index)
-                      console.log(cellValue)
-                    }}
-                  >
-                    Submit
-                  </Button>
-                </Col>
-                <Col>
-                  <Button
-                    variant='danger'
-                    onClick={() => {
-                      handleFocusOut()
-                      props.handleDelete(props.id, cellValue, props.index)
-                      console.log(cellValue)
-                    }}
-                  >
-                    Delete
-                  </Button>
-                </Col>
-              </Row>
+              {!props.deleteType ? (
+                <Button
+                  onClick={() => {
+                    handleFocusOut()
+                    props.handleSubmit(props.id, cellValue)
+                    console.log(cellValue)
+                  }}
+                >
+                  Submit
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => {
+                    handleFocusOut()
+                    props.handleSubmit(props.id, cellValue)
+                    console.log(cellValue)
+                  }}
+                >
+                  Delete
+                </Button>
+              )}
             </Popover.Body>
           </Popover>
         }
       >
         <span onBlur={handleFocusOut} style={{ width: '100%', height: '100%' }}>
           <div>
-            {typeof cellValue == 'undefined' ? '  +  ' : cellFormat(cellValue)}
+            {typeof cellValue == 'undefined'
+              ? disableForm
+                ? ' - '
+                : ' + '
+              : cellFormat(cellValue)}
           </div>
         </span>
       </OverlayTrigger>
@@ -195,4 +191,4 @@ const CellForm = (props: PropsType) => {
   )
 }
 
-export default CellForm
+export default ChangeForm

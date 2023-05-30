@@ -21,6 +21,7 @@ type Course = {
   dept: string
   shortName: string
   professorEmail: string
+  grp: string
 }
 
 type TTRequest = {
@@ -29,15 +30,27 @@ type TTRequest = {
   courseCode: string
   type: string
   grp: string
+  loc: string
 }
 
-type OptionType = {
+interface OptionType {
   label: string
   value: string
-  name: string
 }
 
 type Professor = {
+  label: string
+  value: string
   name: string
   emailId: string
+}
+type TimeTable = {
+  period: number
+  day: string
+  courseCode: string
+  courseName: string
+  type: string
+  teacherName: string
+  grp: string
+  loc: string
 }
